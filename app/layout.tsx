@@ -1,13 +1,10 @@
-import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import type React from "react"
-import  emailjs  from '@emailjs/browser';
-import Script from 'next/script';
-import GoogleAnalytics from './components/google-analytics';
+import { ThemeProvider } from 'next-themes'
+import DynamicBackground from './components/canvas/dynamic-background'
 
-// Use Space Grotesk for a futuristic yet readable font
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   display: "swap",
@@ -21,7 +18,7 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#050505" },
   ],
-    generator: 'MANISH SHARMA'
+  generator: 'MANISH SHARMA'
 }
 
 export default function RootLayout({
@@ -29,55 +26,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
-
   return (
-    <html lang="en">
-      <head>
-        <Script
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}');
-            `,
-          }}
-        />
-        
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          <link
-            rel="preload"
-            as="style"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          />
-        </head>
-    
-      <body>
-        {GA_MEASUREMENT_ID && <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />}
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={spaceGrotesk.variable}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <DynamicBackground />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
-// Initialize EmailJS
-emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
-
-// Add font display swap to improve loading performance
-import { Inter } from 'next/font/google'
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-})
